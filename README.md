@@ -1,50 +1,50 @@
-# Qwen3.5 9B TurboQuant Runner
+# TurboQuant Chat
 
-Minimal local runner for `mlx-community/Qwen3.5-9B-OptiQ-4bit` with TurboQuant KV cache on Apple Silicon.
+Local browser chat UI for `mlx-community/Qwen3.5-9B-OptiQ-4bit` on Apple Silicon, using:
 
-## Setup
+- `mlx-lm` for local inference
+- `mlx-optiq` for OptiQ quantization support
+- TurboQuant KV cache for the self-attention layers
+- a lightweight Python server plus browser UI
+
+![TurboQuant Chat demo](docs/tq-qwen-demo.gif)
+
+## Why This Exists
+
+This project packages a real local `Qwen3.5 9B` experience into something you can actually use:
+
+- local inference on a 16 GB Apple Silicon machine
+- offline-first loading once the model is cached
+- streamed responses in both terminal and browser
+- a practical chat UI with stop/reset controls
+- TurboQuant KV cache compression on the compatible attention layers
+
+It is not a hosted API wrapper, and it is not a fake frontend. The runtime is local MLX.
+
+## Quick Start
 
 ```bash
 cd ~/tq-qwen
 python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+python serve_qwen_ui.py --offline
 ```
 
-## Run
+Then open:
 
-```bash
-cd ~/tq-qwen
-source .venv/bin/activate
-python run_qwen_turboquant.py "Explain how recurrent and self-attention layers differ."
+```text
+http://127.0.0.1:8015
 ```
 
-Interactive chat:
+## Features
 
-```bash
-cd ~/tq-qwen
-source .venv/bin/activate
-python run_qwen_turboquant.py --offline --chat
-```
-
-Streaming is enabled by default. If you want full-response mode instead:
-
-```bash
-python run_qwen_turboquant.py --offline --chat --no-stream
-```
-
-Chat commands:
-
-- `/clear` resets the conversation history.
-- `/exit` or `/quit` leaves chat mode.
-
-After the first download, force local-only inference:
-
-```bash
-cd ~/tq-qwen
-source .venv/bin/activate
-python run_qwen_turboquant.py --offline "Explain how recurrent and self-attention layers differ."
-```
+- Real local `Qwen3.5-9B-OptiQ-4bit` runtime
+- Browser UI with streamed answers
+- Live `Thinking...` state with token count and `tok/s`
+- Terminal chat mode for quick local use
+- Offline cache mode after the first model download
+- Qwen-native non-thinking mode in the chat template
 
 ## Browser UI
 
@@ -56,24 +56,42 @@ source .venv/bin/activate
 python serve_qwen_ui.py --offline
 ```
 
-Then open `http://127.0.0.1:8015`.
-
 UI behavior:
 
-- The UI shows a live `Thinking...` state with a token count while the model generates.
-- The assistant bubble renders the final answer in a formatted way after generation completes.
-- Only one response can generate at a time.
-- `Stop` interrupts the current response between token steps.
-- `Reset` clears the local conversation history on the server.
+- shows a live `Thinking...` state while the model generates
+- renders the final answer in a formatted assistant bubble
+- supports `Stop` to interrupt a live generation
+- supports `Reset` to clear server-side conversation history
+- runs a single active generation at a time
 
-Exact-answer smoke test:
+## CLI Usage
+
+Single prompt:
 
 ```bash
 cd ~/tq-qwen
 source .venv/bin/activate
-python run_qwen_turboquant.py --max-tokens 16 --temp 0.0 --raw-prompt \
-  "Answer with exactly: TurboQuant KV cache is active."
+python run_qwen_turboquant.py --offline "Explain how recurrent and self-attention layers differ."
 ```
+
+Interactive terminal chat:
+
+```bash
+cd ~/tq-qwen
+source .venv/bin/activate
+python run_qwen_turboquant.py --offline --chat
+```
+
+Streaming is enabled by default. To wait for the full answer before printing:
+
+```bash
+python run_qwen_turboquant.py --offline --chat --no-stream
+```
+
+Chat commands:
+
+- `/clear` resets the conversation history
+- `/exit` or `/quit` leaves chat mode
 
 ## Notes
 
@@ -82,6 +100,21 @@ python run_qwen_turboquant.py --max-tokens 16 --temp 0.0 --raw-prompt \
 - TurboQuant is applied only to layers exposing `self_attn`; the recurrent path remains untouched.
 - Use `--bits 3` or `--bits 4` to change KV cache compression.
 - Use `--verbose` to print which cache slots were replaced.
-- By default the script uses the tokenizer chat template when available. Use `--raw-prompt` to bypass it.
-- Use `--chat` for a terminal REPL instead of a single prompt/response.
-- The browser UI is served by `serve_qwen_ui.py` and uses the same runtime module as the CLI.
+- Use `--raw-prompt` to bypass the tokenizer chat template.
+- The browser UI and CLI share the same runtime module.
+
+## Repo Layout
+
+- `serve_qwen_ui.py`: local browser server
+- `run_qwen_turboquant.py`: terminal entrypoint
+- `tq_qwen_runtime.py`: shared MLX + TurboQuant runtime
+- `static/`: browser UI assets
+
+## Smoke Test
+
+```bash
+cd ~/tq-qwen
+source .venv/bin/activate
+python run_qwen_turboquant.py --max-tokens 16 --temp 0.0 --raw-prompt \
+  "Answer with exactly: TurboQuant KV cache is active."
+```
