@@ -21,13 +21,22 @@ This project packages a real local `Qwen3.5 9B` experience into something you ca
 
 It is not a hosted API wrapper, and it is not a fake frontend. The runtime is local MLX.
 
-## Quick Start
+## Installation
 
 ```bash
 cd ~/tq-qwen
 python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+## Run
+
+Start the browser UI:
+
+```bash
+cd ~/tq-qwen
+source .venv/bin/activate
 python serve_qwen_ui.py --offline
 ```
 
