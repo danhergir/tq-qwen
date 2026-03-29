@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TurboQuant Chat</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="masthead">
+        <div>
+          <p class="eyebrow">Local MLX + OptiQ</p>
+          <h1>TurboQuant Chat</h1>
+        </div>
+        <div class="status-cluster">
+          <div class="status-pill" id="status-pill">Starting</div>
+          <button class="ghost-button" id="reset-button" type="button">Reset</button>
+        </div>
+      </header>
+
+      <section class="meta-panel">
+        <div class="meta-card">
+          <span class="meta-label">Model</span>
+          <span class="meta-value" id="model-name">Loading...</span>
+        </div>
+        <div class="meta-card">
+          <span class="meta-label">Source</span>
+          <span class="meta-value" id="model-source">Loading...</span>
+        </div>
+        <div class="meta-card">
+          <span class="meta-label">Mode</span>
+          <span class="meta-value" id="mode-line">Offline-first</span>
+        </div>
+      </section>
+
+      <main class="chat-frame">
+        <div class="chat-log" id="chat-log"></div>
+      </main>
+
+      <footer class="composer">
+        <label class="composer-label" for="message-input">Message</label>
+        <div class="composer-row">
+          <textarea
+            id="message-input"
+            rows="1"
+            placeholder="Ask Qwen something useful..."
+          ></textarea>
+          <div class="composer-actions">
+            <button class="ghost-button" id="stop-button" type="button">Stop</button>
+            <button class="primary-button" id="send-button" type="button">Send</button>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <template id="message-template">
+      <article class="message">
+        <p class="message-role"></p>
+        <p class="message-meta"></p>
+        <div class="message-body"></div>
+      </article>
+    </template>
+
+    <script src="/assets/app.js" type="module"></script>
+  </body>
+  </html>
